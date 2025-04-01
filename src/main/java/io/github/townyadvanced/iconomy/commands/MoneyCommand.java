@@ -285,7 +285,7 @@ public class MoneyCommand implements TabExecutor {
 			throw new CommandException(LangStrings.noAccountFound(accountName));
 
 		String rank = String.valueOf(account.getRank());
-		boolean isSelf = ((Player) viewing).getName().equalsIgnoreCase(accountName);
+		boolean isSelf = viewing.getName().equalsIgnoreCase(accountName);
 
 		String message = isSelf ? LangStrings.personalRank(rank) : LangStrings.playerRank(accountName, rank);
 		Messaging.sendMoneyPrefixedMsg(viewing, message);
