@@ -97,7 +97,7 @@ public class VaultUnlockedEconomy implements Economy {
 
 	@Override
 	public boolean createAccount(UUID accountID, String name) {
-		return iConomyUnlocked.getAccounts().create(accountID, name);
+		return createAccount(accountID, name, false);
 	}
 
 	@Override
@@ -107,12 +107,12 @@ public class VaultUnlockedEconomy implements Economy {
 
 	@Override
 	public boolean createAccount(@NotNull UUID accountID, @NotNull String name, boolean player) {
-		return createAccount(accountID, name);
+		return iConomyUnlocked.getAccounts().create(accountID, name, player);
 	}
 
 	@Override
 	public boolean createAccount(@NotNull UUID accountID, @NotNull String name, @NotNull String worldName, boolean player) {
-		return createAccount(accountID, name);
+		return createAccount(accountID, name, player);
 	}
 
 	@Override

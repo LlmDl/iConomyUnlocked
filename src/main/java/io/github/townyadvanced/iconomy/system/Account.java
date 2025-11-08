@@ -18,10 +18,13 @@ public class Account {
 	private String name;
 	private String SQLTable = Settings.getDBTable();
 	Logger log = iConomyUnlocked.getPlugin().getLogger();
+	private boolean nonPlayer;
 
 	public Account(UUID uuid, String name) {
 		this.uuid = uuid;
 		this.name = name;
+		if (Settings.isNonPlayerAccountName(name))
+			setNonPlayer(true);
 	}
 
 	public static Account getAccountOrThrow(UUID uuid) throws Exception {
@@ -217,6 +220,31 @@ public class Account {
 
 			ps = conn.prepareStatement("UPDATE " + SQLTable + " SET username = ? WHERE uuid = ?");
 			ps.setString(1, this.name);
+			ps.setString(2, this.uuid.toString());
+
+			ps.executeUpdate();
+		} catch (Exception ex) {
+			log.warning("Failed to update status: " + ex);
+			return false;
+		} finally {
+			iConomyUnlocked.getBackEnd().close(conn, ps);
+		}
+		return true;
+	}
+
+	public boolean isNonPlayer() {
+		return this.nonPlayer;
+	}
+
+	public boolean setNonPlayer(boolean b) {
+		this.nonPlayer = b;
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = iConomyUnlocked.getBackEnd().getConnection();
+
+			ps = conn.prepareStatement("UPDATE " + SQLTable + " SET nonplayer = ? WHERE uuid = ?");
+			ps.setBoolean(1, this.nonPlayer);
 			ps.setString(2, this.uuid.toString());
 
 			ps.executeUpdate();

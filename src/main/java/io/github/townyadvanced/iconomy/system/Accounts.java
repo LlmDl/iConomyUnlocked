@@ -80,15 +80,16 @@ public class Accounts {
      * @param name the Account name.
      * @return true if successful.
      */
-    public boolean create(UUID uuid, String name) {
+    public boolean create(UUID uuid, String name, boolean nonPlayer) {
         Connection conn = null;
         PreparedStatement ps = null;
         try {
             conn = iConomyUnlocked.getBackEnd().getConnection();
-            ps = conn.prepareStatement("INSERT INTO " + SQLTable + "(uuid, username, balance, hidden) VALUES (?, ?, ?, 0)");
+            ps = conn.prepareStatement("INSERT INTO " + SQLTable + "(uuid, username, balance, hidden, nonplayer) VALUES (?, ?, ?, 0, ?)");
             ps.setString(1, uuid.toString());
             ps.setString(2, name);
             ps.setDouble(3, Settings.getDefaultBalance());
+            ps.setBoolean(4, nonPlayer);
             ps.executeUpdate();
         } catch (Exception e) {
             return false;
@@ -117,6 +118,7 @@ public class Accounts {
 			account.setName(name);
 			account.getHoldings().set(balance);
 			account.setHidden(hidden);
+			account.setNonPlayer(Settings.isNonPlayerAccountName(name));
 			return true;
 		}
 
@@ -124,11 +126,12 @@ public class Accounts {
         PreparedStatement ps = null;
         try {
             conn = iConomyUnlocked.getBackEnd().getConnection();
-            ps = conn.prepareStatement("INSERT INTO " + SQLTable + "(uuid, username, balance, hidden) VALUES (?, ?, ?, ?)");
+            ps = conn.prepareStatement("INSERT INTO " + SQLTable + "(uuid, username, balance, hidden, nonplayer) VALUES (?, ?, ?, ?, ?)");
             ps.setString(1, uuid.toString());
             ps.setString(2, name);
             ps.setDouble(3, balance);
             ps.setBoolean(4, hidden);
+            ps.setBoolean(5, Settings.isNonPlayerAccountName(name));
             ps.executeUpdate();
         } catch (Exception e) {
             return false;
@@ -264,7 +267,9 @@ public class Accounts {
         LinkedHashMap<String, Double> Ranking = new LinkedHashMap<String, Double>();
         try {
             conn = iConomyUnlocked.getBackEnd().getConnection();
-            ps = conn.prepareStatement("SELECT username,balance FROM " + SQLTable + " WHERE hidden = 0 ORDER BY balance DESC LIMIT ?");
+            ps = conn.prepareStatement("SELECT username,balance FROM " + SQLTable + " WHERE hidden = 0 "
+                    + (Settings.hideNonPlayerAccountsInRankings() ? "AND nonplayer = 0 " : "")
+                    + "ORDER BY balance DESC LIMIT ?");
             ps.setInt(1, amount);
             rs = ps.executeQuery();
 
@@ -337,7 +342,7 @@ public class Accounts {
 				return account;
 			}
         }
-        if (!create(uuid, name)) {
+        if (!create(uuid, name, Settings.isNonPlayerAccountName(name))) {
             return null;
         }
 
@@ -440,5 +445,18 @@ public class Accounts {
 			iConomyUnlocked.getBackEnd().close(conn, ps, rs);
 		}
 		return name;
+	}
+
+	public void updateAccountsForNewTables(List<String> tablesUpdated) {
+
+		if (tablesUpdated.contains("nonplayer")) {
+			// non player account status
+			for (String name : new ArrayList<>(getUUIDNameMap().values())) {
+				if (!Settings.isNonPlayerAccountName(name))
+					continue;
+				log.info("Account " + name + " is being marked as a non player account.");
+				get(name).setNonPlayer(true);
+			}
+		}
 	}
 }
