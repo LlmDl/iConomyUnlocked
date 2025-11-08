@@ -18,7 +18,6 @@ public class Account {
 	private String name;
 	private String SQLTable = Settings.getDBTable();
 	Logger log = iConomyUnlocked.getPlugin().getLogger();
-	private boolean nonPlayer;
 
 	public Account(UUID uuid, String name) {
 		this.uuid = uuid;
@@ -168,7 +167,9 @@ public class Account {
 		PreparedStatement ps = null;
 		try {
 			conn = iConomyUnlocked.getBackEnd().getConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + SQLTable + " WHERE hidden = 0 ORDER BY balance DESC");
+			ps = conn.prepareStatement("SELECT * FROM " + SQLTable + " WHERE hidden = 0 "
+					+ (Settings.hideNonPlayerAccountsInRankings() ? "AND nonplayer = 0 " : "")
+					+ "ORDER BY balance DESC");
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
@@ -231,18 +232,35 @@ public class Account {
 	}
 
 	public boolean isNonPlayer() {
-		return this.nonPlayer;
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement ps = null;
+		try {
+			conn = iConomyUnlocked.getBackEnd().getConnection();
+			ps = conn.prepareStatement("SELECT nonplayer FROM " + SQLTable + " WHERE username = ? LIMIT 1");
+			ps.setString(1, this.name);
+			rs = ps.executeQuery();
+
+			if (rs != null && rs.next()) {
+				boolean bool = rs.getBoolean("nonplayer");
+				return bool;
+			}
+		} catch (Exception ex) {
+			log.warning("Failed to check status: " + ex);
+		} finally {
+			iConomyUnlocked.getBackEnd().close(conn, ps, rs);
+		}
+		return false;
 	}
 
 	public boolean setNonPlayer(boolean b) {
-		this.nonPlayer = b;
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
 			conn = iConomyUnlocked.getBackEnd().getConnection();
 
 			ps = conn.prepareStatement("UPDATE " + SQLTable + " SET nonplayer = ? WHERE uuid = ?");
-			ps.setBoolean(1, this.nonPlayer);
+			ps.setBoolean(1, b);
 			ps.setString(2, this.uuid.toString());
 
 			ps.executeUpdate();
