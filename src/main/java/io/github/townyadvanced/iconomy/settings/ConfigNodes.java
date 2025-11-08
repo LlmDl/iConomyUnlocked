@@ -34,6 +34,12 @@ public enum ConfigNodes {
 			"",
 			"# Default balance of a new account."),
 
+	ACCOUNT_SETTINGS("account_settings","","",""),
+	ACCOUNT_SETTINGS_NON_PLAYER_ACCOUNT_NAME_PREFIXES("account_settings.non_player_account_name_prefixes",
+			"town-,nation-,towny-server",
+			"",
+			"# A comma-separated list of prefixes that non-player accounts would have."),
+	
 	DATABASE_ROOT("database","","",""),
 	DATABASE_TYPE("database.type",
 			"H2",
