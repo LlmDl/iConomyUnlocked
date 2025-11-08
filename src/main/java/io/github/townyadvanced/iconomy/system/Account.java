@@ -23,8 +23,6 @@ public class Account {
 	public Account(UUID uuid, String name) {
 		this.uuid = uuid;
 		this.name = name;
-		if (Settings.isNonPlayerAccountName(name))
-			setNonPlayer(true);
 	}
 
 	public static Account getAccountOrThrow(UUID uuid) throws Exception {
