@@ -50,7 +50,7 @@ public class VaultEconomy implements Economy {
         if (hasAccount(player)) {
             return false;
         }
-        iConomyUnlocked.getAccounts().create(player.getUniqueId(), player.getName());
+        iConomyUnlocked.getAccounts().create(player.getUniqueId(), player.getName(), Settings.isNonPlayerAccountName(player.getName()));
         return true;
     }
 

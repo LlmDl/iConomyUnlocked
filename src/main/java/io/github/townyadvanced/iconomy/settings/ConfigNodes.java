@@ -34,6 +34,16 @@ public enum ConfigNodes {
 			"",
 			"# Default balance of a new account."),
 
+	ACCOUNT_SETTINGS("account_settings","","",""),
+	ACCOUNT_SETTINGS_NON_PLAYER_ACCOUNT_NAME_PREFIXES("account_settings.non_player_account_name_prefixes",
+			"town-,nation-,towny-server",
+			"",
+			"# A comma-separated list of prefixes that non-player accounts would have."),
+	ACCOUNT_SETTINGS_HIDE_NON_PLAYER_ACCOUNTS_IN_RANKINGS("account_settings.hide_non_player_accounts_in_ranks",
+			"true",
+			"",
+			"# While true, non-player accounts will not be seen in the /money rank and /money top commands."),
+
 	DATABASE_ROOT("database","","",""),
 	DATABASE_TYPE("database.type",
 			"H2",

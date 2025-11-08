@@ -7,6 +7,11 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
 import java.util.logging.Logger;
 
 import org.h2.jdbcx.JdbcConnectionPool;
@@ -73,6 +78,7 @@ public class BackEnd {
 						+ "username VARCHAR(32),"
 						+ "balance DECIMAL (64, 2),"
 						+ "hidden BOOLEAN DEFAULT '0'"
+						+ "nonplayer BOOLEAN DEFAULT '0'"
 						+ ");"
 					);
 				ps.executeUpdate();
@@ -92,6 +98,7 @@ public class BackEnd {
 						+ "`username` VARCHAR(32) NOT NULL,"
 						+ "`balance` DECIMAL(64, 2) NOT NULL,"
 						+ "`hidden` BOOLEAN NOT NULL DEFAULT '0',"
+						+ "`nonplayer` BOOLEAN NOT NULL DEFAULT '0'"
 						+ "PRIMARY KEY (`id`),"
 						+ "UNIQUE(`uuid`)"
 						+ ")"
@@ -231,5 +238,57 @@ public class BackEnd {
 			try {
 				connection.close();
 			} catch (SQLException ignored) {}
+	}
+
+	public List<String> updateTables() {
+		Connection conn = getConnection();
+		LinkedList<String> MySQL = new LinkedList<String>();
+		LinkedList<String> H2 = new LinkedList<String>();
+		Statement stmt = null;
+		ResultSet rs = null;
+		List<String> updates = new ArrayList<>();
+		boolean usingMysql = Settings.getDBType().equalsIgnoreCase("mysql");
+		String tableName = usingMysql ? SQLTable : SQLTable.toUpperCase(Locale.ROOT);
+
+		try {
+			DatabaseMetaData metadata = conn.getMetaData();
+
+			// nonplayer column added in 0.0.12
+			ResultSet columns = metadata.getColumns(null, null, tableName, "NONPLAYER");
+			if (!columns.next()) {
+				MySQL.add("ALTER TABLE " + SQLTable + " ADD nonplayer boolean DEFAULT '0';");
+				H2.add("ALTER TABLE " + SQLTable + " ADD NONPLAYER BOOLEAN DEFAULT '0';");
+				updates.add("nonplayer");
+			}
+
+			if (MySQL.isEmpty() && H2.isEmpty()) {
+				log.info("   No database updates needed.");
+				return updates;
+			}
+
+			LinkedList<String> statements = usingMysql ? MySQL : H2; 
+
+			int i = 1;
+			for (String query : statements) {
+				stmt = conn.createStatement();
+				log.info("   Executing SQL Query #" + i + " of " + statements.size() + ": " + query);
+				stmt.execute(query);
+				log.info("   Statement Executed.");
+				i++;
+			}
+		} catch (SQLException ex) {
+			log.warning("   Error updating database: " + ex.getMessage());
+		} finally {
+			if (stmt != null)
+				try {
+					stmt.close();
+				} catch (SQLException ex) {}
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException ex) {}
+			close(conn);
+		}
+		return updates;
 	}
 }

@@ -1,5 +1,6 @@
 package io.github.townyadvanced.iconomy;
 
+import java.util.List;
 import java.util.function.Function;
 
 import org.bukkit.Bukkit;
@@ -48,8 +49,12 @@ public class iConomyUnlocked extends JavaPlugin {
 
 			backend = new BackEnd();
 			backend.setupAccountTable();
+			List<String> tablesUpdated = backend.updateTables();
 
 			accounts = new Accounts();
+
+			if (!tablesUpdated.isEmpty())
+				accounts.updateAccountsForNewTables(tablesUpdated);
 
 			transactions = new Transactions();
 			backend.setupTransactionTable();

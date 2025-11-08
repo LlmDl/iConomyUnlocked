@@ -3,11 +3,15 @@ package io.github.townyadvanced.iconomy.settings;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import io.github.townyadvanced.commentedconfiguration.CommentedConfiguration;
 import io.github.townyadvanced.iconomy.iConomyUnlocked;
 import io.github.townyadvanced.iconomy.util.FileMgmt;
+import io.github.townyadvanced.iconomy.util.StringMgmt;
 
 public class Settings {
 	private static CommentedConfiguration config, newConfig;
@@ -111,6 +115,11 @@ public class Settings {
 		return config.getString(node.getRoot().toLowerCase(), node.getDefault());
 	}
 
+	public static List<String> getStrArr(ConfigNodes node) {
+
+		return Arrays.stream(getString(node).split(",")).collect(Collectors.toList());
+	}
+
 	public static String format(BigDecimal money) {
 		return format(FORMAT.format(money.doubleValue()));
 	}
@@ -185,5 +194,17 @@ public class Settings {
 
 	public static boolean transactionLoggingEnabled() {
 		return getBoolean(ConfigNodes.TRANSACTION_LOGGING_ENABLED);
+	}
+
+	public static List<String> getNonPlayerAccountPrefixes() {
+		return getStrArr(ConfigNodes.ACCOUNT_SETTINGS_NON_PLAYER_ACCOUNT_NAME_PREFIXES);
+	}
+
+	public static boolean isNonPlayerAccountName(String name) {
+		return getNonPlayerAccountPrefixes().stream().filter(prefix -> name.startsWith(prefix)).count() > 0;
+	}
+
+	public static boolean hideNonPlayerAccountsInRankings() {
+		return getBoolean(ConfigNodes.ACCOUNT_SETTINGS_HIDE_NON_PLAYER_ACCOUNTS_IN_RANKINGS);
 	}
 }
