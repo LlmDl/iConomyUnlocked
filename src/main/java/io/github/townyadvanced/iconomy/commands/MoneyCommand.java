@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.iConomy.ConversionAccount;
 import com.iConomy.iConomy;
+import com.iConomy.system.Accounts;
 
 import io.github.townyadvanced.iconomy.iConomyUnlocked;
 import io.github.townyadvanced.iconomy.settings.LangStrings;
@@ -28,6 +29,7 @@ import io.github.townyadvanced.iconomy.system.Account;
 import io.github.townyadvanced.iconomy.system.Holdings;
 import io.github.townyadvanced.iconomy.util.Messaging;
 import io.github.townyadvanced.iconomy.util.Permissions;
+import io.github.townyadvanced.iconomy.util.PlayerNameCache;
 import io.github.townyadvanced.iconomy.util.StringMgmt;
 
 public class MoneyCommand implements TabExecutor {
@@ -544,16 +546,15 @@ public class MoneyCommand implements TabExecutor {
 			@NotNull String[] args) {
 
 		String subCmdArg = args[0].toLowerCase(Locale.ROOT);
-
 		if (args.length == 1) {
 			if (StringMgmt.filterByStart(SUB_CMDS, subCmdArg).size() > 0) {
 				return SUB_CMDS.stream().filter(s -> s.startsWith(subCmdArg)).collect(Collectors.toList());
 			} else {
-				return null;
+				return StringMgmt.filterByStart(PlayerNameCache.getPlayerNames(), args[0]);
 			}
 		} else if (args.length == 2) {
 			if (PLAYER_CMDS.contains(subCmdArg))
-				return null;
+				return StringMgmt.filterByStart(PlayerNameCache.getPlayerNames(), args[1]);
 			if (subCmdArg.equals("top"))
 				return Arrays.asList("<amount>");
 		} else if (args.length == 3) {
