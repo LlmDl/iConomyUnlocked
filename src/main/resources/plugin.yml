@@ -29,6 +29,7 @@ permissions:
             iConomy.admin.stats: true
             iConomy.admin.grant: true
             iConomy.admin.hide: true
+            iConomy.admin.marknonplayer: true
             iConomy.admin.set: true
             iConomy.admin.importiconomy: true
 
@@ -49,6 +50,8 @@ permissions:
     iConomy.admin.grant:
         default: op
     iConomy.admin.hide:
+        default: op
+    iConomy.admin.marknonplayer:
         default: op
     iConomy.admin.set:
         default: op

@@ -65,6 +65,7 @@ public class MoneyCommand implements TabExecutor {
 		case "grant", "-g" -> parseMoneyGrantCommand(player, sender, isPlayer, split);
 		case "help", "?" -> getMoneyHelp(sender);
 		case "hide", "-h" -> parseMoneyHideCommand(sender, split);
+		case "marknonplayer" -> parseMoneyMarkNonPlayerCommand(sender, split);
 		case "pay", "-p" -> parseMoneyPayCommand(player, sender, isPlayer, split);
 		case "purge", "-pf" -> parseMoneyPurgeCommand(sender);
 		case "rank", "-r" -> parseMoneyRankCommand(player, sender, isPlayer, split);
@@ -197,6 +198,28 @@ public class MoneyCommand implements TabExecutor {
 		account.setHidden(hidden);
 		Messaging.send(sender, LangStrings.accountHiddenStatus((hidden ? "hidden" : "visible")));
 	}
+	
+	private void parseMoneyMarkNonPlayerCommand(CommandSender sender, String[] args) throws CommandException {
+		if (!Permissions.hasPermission(sender, "iConomy.admin.marknonplayer"))
+			return;
+
+		if (args.length != 2) {
+			getMoneyHelp(sender);
+			return;
+		}
+
+		Player check = Bukkit.getPlayerExact(args[0]);
+		String name = check != null ? check.getName() : args[0];
+
+		Account account = Account.getAccount(name);
+		if (account == null)
+			throw new CommandException(LangStrings.noAccountFound(name));
+
+		boolean markNonPlayer = StringMgmt.is(args[1], new String[] { "true", "t", "-t", "yes", "da", "-d" });
+		account.setNonPlayer(markNonPlayer);
+		Messaging.send(sender, LangStrings.accountHiddenStatus((markNonPlayer ? "non-player" : "player")));
+	}
+	
 
 	private void parseMoneyPayCommand(Player player, CommandSender sender, boolean isPlayer, String[] args) throws CommandException {
 		if (!Permissions.hasPermission(sender, "iConomy.payment"))
@@ -514,6 +537,9 @@ public class MoneyCommand implements TabExecutor {
 		if (Permissions.hasPermission(sender, "iConomy.admin.hide", true))
 			Messaging.send(sender, "`G  /money `ghide `G<`wplayer`G> `wtrue`G/`wfalse `y Hide or show an account.");
 
+		if (Permissions.hasPermission(sender, "iConomy.admin.marknonplayer", true))
+			Messaging.send(sender, "`G  /money `gmarknonplayer `G<`wplayer`G> `wtrue`G/`wfalse `y Marks an account as a non-player account.");
+
 		if (Permissions.hasPermission(sender, "iConomy.admin.account.create", true))
 			Messaging.send(sender, "`G  /money `gcreate `G<`wplayer`G> `y Create player account.");
 
@@ -536,7 +562,7 @@ public class MoneyCommand implements TabExecutor {
 	private final List<String> SUB_CMDS = Arrays.asList("?", "rank", "top", "pay", "grant", "set", "hide", "create",
 			"remove", "preset", "purge", "empty", "stats", "importiconomy");
 	private final List<String> PLAYER_CMDS = Arrays.asList("rank", "pay", "grant", "set", "hide", "create", "remove",
-			"reset");
+			"reset", "marknonplayer");
 	private final List<String> AMOUNT_CMDS = Arrays.asList("pay","grant","set");
 	@Nullable
 	@Override
