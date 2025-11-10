@@ -54,7 +54,7 @@ public class StringMgmt {
 		if (list == null || startingWith == null) {
 			return Collections.emptyList();
 		}
-		return list.stream().filter(name -> name.toLowerCase(Locale.ROOT).startsWith(startingWith.toLowerCase(Locale.ROOT))).collect(Collectors.toList());
+		return list.stream().filter(name -> name != null && name.toLowerCase(Locale.ROOT).startsWith(startingWith.toLowerCase(Locale.ROOT))).collect(Collectors.toList());
 	}
 
 	

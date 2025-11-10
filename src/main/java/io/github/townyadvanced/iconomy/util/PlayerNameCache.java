@@ -19,8 +19,11 @@ public class PlayerNameCache {
 
 		names.clear();
 		time = System.currentTimeMillis();
-		for (OfflinePlayer player : Arrays.asList(Bukkit.getOfflinePlayers()))
+		for (OfflinePlayer player : Arrays.asList(Bukkit.getOfflinePlayers())) {
+			if (player == null || player.getName() == null)
+				continue;
 			names.add(player.getName());
+		}
 
 		return names;
 	}
