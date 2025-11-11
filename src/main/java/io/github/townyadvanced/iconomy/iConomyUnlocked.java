@@ -9,6 +9,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import io.github.townyadvanced.iconomy.commands.MoneyCommand;
 import io.github.townyadvanced.iconomy.listener.PlayerJoinListener;
@@ -44,6 +45,11 @@ public class iConomyUnlocked extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		try {
+			if (!testPaper()) {
+				disableWithMessage("iConomyUnlocked no longer supports Spigot/CraftBukkit, and now requires Paper to run. See https://papermc.io for more information about Paper.");
+				return;
+			}
+			
 			loadConfig();
 			loadLangFile();
 
@@ -65,6 +71,10 @@ public class iConomyUnlocked extends JavaPlugin {
 			disableWithMessage(e.getMessage());
 			return;
 		}
+	}
+
+	private boolean testPaper() {
+		return classExists("io.papermc.paper.threadedregions.RegionizedServer") || classExists("io.papermc.paper.configuration.Configuration");
 	}
 
 	public void loadConfig() throws Exception {
@@ -170,5 +180,14 @@ public class iConomyUnlocked extends JavaPlugin {
 
 	public static Transactions getTransactions() {
 		return transactions;
+	}
+
+	private boolean classExists(@NotNull String className) {
+		try {
+			Class.forName(className);
+			return true;
+		} catch (ClassNotFoundException e) {
+			return false;
+		}
 	}
 }

@@ -19,15 +19,17 @@ iConomyUnlocked has been created to give iConomy 5-using servers an exit path. I
 ### Facts
 
 - Supports Vault-based and Vault2(VaultUnlocked)-based plugins that use economies.
-- Supports Folia.
+- Supports Folia & Paper, Craftbukkit and Spigot are no longer supported.
 - Supports the H2 and MySQL database types.
 - Uses CommentedConfiguration for a config which automatically updates while maintaining your settings.
 - Can import accounts from iConomy 5.26.
+- Supports Minimessage text formatting in the lang file.
 
 ----
 ### Requirements:
 
 - [VaultUnlocked](https://github.com/TheNewEconomy/VaultUnlocked) or Vault.
+- Paper or Folia.
 
 ----
 ### Commands:

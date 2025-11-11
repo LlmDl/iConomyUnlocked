@@ -1,9 +1,10 @@
 package io.github.townyadvanced.iconomy.util;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import io.github.townyadvanced.iconomy.settings.LangStrings;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 
 public class Messaging {
 
@@ -14,7 +15,7 @@ public class Messaging {
 	}
 
 	public static void sendErrorMessage(CommandSender sender, String message) {
-		send(sender, ChatColor.RED + message);
+		send(sender, "<dark_red>" + message);
 	}
 
 	public static void sendMoneyPrefixedMsg(CommandSender sender, String message) {
@@ -22,58 +23,39 @@ public class Messaging {
 	}
 
 	/**
-	 * Converts color codes into the simoleon code. Sort of a HTML format color code
-	 * tag and `[code]
-	 * <p>
-	 * Color codes allowed: black, navy, green, teal, red, purple, gold, silver,
-	 * gray, blue, lime, aqua, rose, pink, yellow, white.
-	 * </p>
-	 * Example: <blockquote
-	 * 
-	 * <pre>
-	 * Messaging.colorize("Hello &lt;green>world!"); // returns: Hello $world!
-	 * </pre>
-	 * 
-	 * </blockquote>
+	 * Converts color codes into a Minimessage/Adventure component.
 	 *
 	 * @param original Original string to be parsed against group of color names.
 	 *
-	 * @return <code>String</code> - The parsed string after conversion.
+	 * @return <code>Component</code> - The parsed Component after conversion.
 	 */
-	private static String colorize(String original) {
-		original = original.replace("`r", ChatColor.RED.toString());
-		original = original.replace("<rose>", ChatColor.RED.toString());
-		original = original.replace("`R", ChatColor.DARK_RED.toString());
-		original = original.replace("<red>", ChatColor.DARK_RED.toString());
-		original = original.replace("`y", ChatColor.YELLOW.toString());
-		original = original.replace("<yellow>", ChatColor.YELLOW.toString());
-		original = original.replace("`Y", ChatColor.GOLD.toString());
-		original = original.replace("<gold>", ChatColor.GOLD.toString());
-		original = original.replace("`g", ChatColor.GREEN.toString());
-		original = original.replace("<lime>", ChatColor.GREEN.toString());
-		original = original.replace("<green>", ChatColor.GREEN.toString());
-		original = original.replace("`G", ChatColor.DARK_GREEN.toString());
-		original = original.replace("`a", ChatColor.AQUA.toString());
-		original = original.replace("<aqua>", ChatColor.AQUA.toString());
-		original = original.replace("`A", ChatColor.DARK_AQUA.toString());
-		original = original.replace("<teal>", ChatColor.DARK_AQUA.toString());
-		original = original.replace("`b", ChatColor.BLUE.toString());
-		original = original.replace("<blue>", ChatColor.BLUE.toString());
-		original = original.replace("`B", ChatColor.DARK_BLUE.toString());
-		original = original.replace("<navy>", ChatColor.DARK_BLUE.toString());
-		original = original.replace("`p", ChatColor.LIGHT_PURPLE.toString());
-		original = original.replace("<pink>", ChatColor.LIGHT_PURPLE.toString());
-		original = original.replace("`P", ChatColor.DARK_PURPLE.toString());
-		original = original.replace("<purple>", ChatColor.DARK_PURPLE.toString());
-		original = original.replace("`k", ChatColor.BLACK.toString());
-		original = original.replace("<black>", ChatColor.BLACK.toString());
-		original = original.replace("`s", ChatColor.GRAY.toString());
-		original = original.replace("<silver>", ChatColor.GRAY.toString());
-		original = original.replace("`S", ChatColor.DARK_GRAY.toString());
-		original = original.replace("<gray>", ChatColor.DARK_GRAY.toString());
-		original = original.replace("`w", ChatColor.WHITE.toString());
-		original = original.replace("<white>", ChatColor.WHITE.toString());
-		return original;
+	private static Component colorize(String original) {
+		original = original.replace("`r", "<red>");
+		original = original.replace("<rose>", "<red>");
+		original = original.replace("`R", "<dark_red>");
+		original = original.replace("<red>", "<dark_red>");
+		original = original.replace("`y", "<yellow>");
+		original = original.replace("`Y", "<gold>");
+		original = original.replace("`g", "<green>");
+		original = original.replace("<lime>", "<green>");
+		original = original.replace("`G", "<dark_green>");
+		original = original.replace("`a", "<aqua>");
+		original = original.replace("`A", "<dark_aqua>");
+		original = original.replace("<teal>", "<dark_aqua>");
+		original = original.replace("`b", "<blue>");
+		original = original.replace("`B", "<dark_blue>");
+		original = original.replace("<navy>", "<dark_blue>");
+		original = original.replace("`p", "<light_purple>");
+		original = original.replace("<pink>", "<light_purple>");
+		original = original.replace("`P", "<dark_purple>");
+		original = original.replace("<purple>", "<dark_purple>");
+		original = original.replace("`k", "<black>");
+		original = original.replace("`s", "<gray>");
+		original = original.replace("<silver>", "<gray>");
+		original = original.replace("`S", "<dark_gray>");
+		original = original.replace("`w", "<white>");
+		original = original.replace("<white>", "<white>");
+		return MiniMessage.miniMessage().deserialize(original);
 	}
 
 }
