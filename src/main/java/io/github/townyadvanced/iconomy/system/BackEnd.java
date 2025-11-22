@@ -77,7 +77,7 @@ public class BackEnd {
 						+ "uuid VARCHAR(36) UNIQUE,"
 						+ "username VARCHAR(32),"
 						+ "balance DECIMAL (64, 2),"
-						+ "hidden BOOLEAN DEFAULT '0'"
+						+ "hidden BOOLEAN DEFAULT '0',"
 						+ "nonplayer BOOLEAN DEFAULT '0'"
 						+ ");"
 					);
@@ -98,7 +98,7 @@ public class BackEnd {
 						+ "`username` VARCHAR(32) NOT NULL,"
 						+ "`balance` DECIMAL(64, 2) NOT NULL,"
 						+ "`hidden` BOOLEAN NOT NULL DEFAULT '0',"
-						+ "`nonplayer` BOOLEAN NOT NULL DEFAULT '0'"
+						+ "`nonplayer` BOOLEAN NOT NULL DEFAULT '0',"
 						+ "PRIMARY KEY (`id`),"
 						+ "UNIQUE(`uuid`)"
 						+ ")"
@@ -249,15 +249,14 @@ public class BackEnd {
 		List<String> updates = new ArrayList<>();
 		boolean usingMysql = Settings.getDBType().equalsIgnoreCase("mysql");
 		String tableName = usingMysql ? SQLTable : SQLTable.toUpperCase(Locale.ROOT);
-
 		try {
 			DatabaseMetaData metadata = conn.getMetaData();
 
 			// nonplayer column added in 0.0.12
 			ResultSet columns = metadata.getColumns(null, null, tableName, "NONPLAYER");
 			if (!columns.next()) {
-				MySQL.add("ALTER TABLE " + SQLTable + " ADD nonplayer boolean DEFAULT '0';");
-				H2.add("ALTER TABLE " + SQLTable + " ADD NONPLAYER BOOLEAN DEFAULT '0';");
+				MySQL.add("ALTER TABLE " + tableName + " ADD nonplayer boolean DEFAULT '0';");
+				H2.add("ALTER TABLE " + tableName + " ADD NONPLAYER BOOLEAN DEFAULT '0';");
 				updates.add("nonplayer");
 			}
 
